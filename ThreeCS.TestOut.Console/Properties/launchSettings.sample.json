@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "ThreeCS.TestOut.Console": {
+      "commandName": "Project",
+      "commandLineArgs": "--mode Server,Agent,Run --base-path \"..\\..\\..\\..\\Sample.FrameworkTests\\bin\\Debug\" --test-assembly \"Sample.FrameworkTests.dll\" --verbose --batch-size 5 --max-workers 5",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": "true"
+    }
+  }
+}

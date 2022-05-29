@@ -1,0 +1,21 @@
+﻿syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+package MsgBusServer;
+
+service MessageBusServer {
+  rpc Ping (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+  rpc SendMessage (GrpcHubMessage) returns (google.protobuf.Empty) {}
+  rpc Register(GrpcClientInfo) returns (google.protobuf.Empty) {}
+  rpc ReceiveMessages(GrpcClientInfo) returns (stream GrpcHubMessage) {}
+}
+
+message GrpcClientInfo{
+	string HostId = 1;
+}
+
+message GrpcHubMessage {
+  string SenderId = 1;
+  string RecipientId = 2;
+  string MessageData = 3;
+}

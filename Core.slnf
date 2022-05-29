@@ -1,0 +1,10 @@
+{
+  "solution": {
+    "path": "ThreeCS.TestOut.sln",
+    "projects": [
+      "ThreeCS.TestOut.Console\\ThreeCS.TestOut.Console.csproj",
+      "ThreeCS.TestOut.Core\\ThreeCS.TestOut.Core.csproj",
+      "ThreeCS.TestOut.NUnit\\ThreeCS.TestOut.NUnit.csproj"
+    ]
+  }
+}
