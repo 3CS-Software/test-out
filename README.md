@@ -1,6 +1,3 @@
-# Test-Out
-Just like a chocolate milkshake, only a distributed test runner.
-
 # About Test-Out
 Testout is a distributed test running platform.  It's main goal is to reduce CI processing times for long running integration tests.
 
