@@ -20,4 +20,4 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore Core.slnf
     - name: Build
-      run: dotnet build --no-restore Core.slnf -p:Version=${{ '0.5.' + github.run_number }}
+      run: dotnet build --no-restore Core.slnf -p:Version=${{ join(['0.5.', github.run_number]) }}
