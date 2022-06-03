@@ -23,12 +23,3 @@ jobs:
 
     - name: Build
       run: dotnet build --no-restore Core.slnf -p:Version=${{ format('0.5.{0}', github.run_number) }}
-
-    - name: Pack
-      run: dotnet pack 'ThreeCS.TestOut.Console/ThreeCS.TestOut.Console.csproj' --include-symbols --include-source --no-build -p:Version=${{ format('0.5.{0}', github.run_number) }} -p:SymbolPackageFormat=snupkg -o dist
-
-    - name: Archive nuget source
-      uses: actions/upload-artifact@v3
-      with:
-        name: testout-packages
-        path: dist
