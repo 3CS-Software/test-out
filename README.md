@@ -17,7 +17,7 @@ To setup a Test-Out server, run
 `sc.exe create "TestoutServer" binpath="C:\Tools\dotnet\testout.exe --as-service --mode Server --server-url https://the-server-hostname:34872"`
 
 To setup a Test-Out agent, run
-`sc.exe create "TestoutAgent" binpath="C:\Tools\dotnet\testout.exe --as-service --mode Server --server-url https://the-server-hostname:34872"`
+`sc.exe create "TestoutAgent" binpath="C:\Tools\dotnet\testout.exe --as-service --mode Agent --server-url https://the-server-hostname:34872"`
 
 Be sure to check what users the service is running as, what the startup for the service is, and check firewalls after installation.
 
