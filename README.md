@@ -7,6 +7,9 @@ A test run is started by an Invoker, which sends the test folder to the server. 
 
 # Installation
 
+## Supported Platforms
+Right now it only supports windows platforms for the agents, as it's currently hard coded to use the .net framework version of nUnit.
+
 ## Installation for Server/Agent
 To install Test-Out, run the following command:
 `dotnet tool install --tool-path C:\Tools\dotnet ThreeCS.TestOut.Console`
@@ -23,20 +26,19 @@ Be sure to check what users the service is running as, what the startup for the 
 
 When run with the `--as-service` flag, Test-Out will put all it's data in the global program data folder, usually C:\ProgramData\TestOut.  This flag can be used with the service stopped, along with the `--verbose` option to help diagnose issues.
 
-###TODO: Linux service installation
-
 ## Installation for Test-Out Client
 Run the following command:
-`dotnet tool install --ThreeCS.TestOut.Console`
+`dotnet tool install ThreeCS.TestOut.Console`
 
 Test-Out can now be invoked using the 'testout' command.  Run `testout -?` for detailed usage instructions.
 Test-Out can be run in any mode (Run, Agent, Server) interactively.  Data that is used is stored under the users AppData/Local/TestOut folder.
 
 # Running Tests
 Once the tool is installed, tests can be run with:
-`TODO: instructions here`
+`testout --mode Run --base-path ".\MyProject.Tests\bin\Debug" --test-assembly "MyProject.Tests.dll"`
 
 For single machine testing scenarios, the mode can be both Run/Agent and Server, eg:
-`TODO: single machine here`
+`testout --mode Run,Agent,Server --base-path ".\MyProject.Tests\bin\Debug" --test-assembly "MyProject.Tests.dll"`
+This will start a console process that hosts a server on the default address (http://localhost:34872), along with an agent for that server and finally starts a runner process.
 
 
