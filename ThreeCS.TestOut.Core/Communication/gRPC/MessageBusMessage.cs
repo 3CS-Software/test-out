@@ -11,9 +11,9 @@ namespace ThreeCS.TestOut.Core.Communication.gRPC
     /// </summary>
     public class MessageBusMessage
     {
-        public string SenderId { get; internal set; }
-        public string RecipientId { get; internal set; }
-        public string FullTypeName { get; internal set; }
-        public string MessageJson { get; internal set; }
+        public string SenderId { get; set; }
+        public string RecipientId { get; set; }
+        public string FullTypeName { get; set; }
+        public string MessageJson { get; set; }
     }
 }
