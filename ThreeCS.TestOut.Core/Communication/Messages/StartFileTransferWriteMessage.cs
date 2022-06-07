@@ -10,5 +10,7 @@ namespace ThreeCS.TestOut.Core.Communication.Messages
     {
         public Guid StreamId { get; set; }
         public string RequestedPath { get; set; }
+
+        public bool UseCompression { get; set; }
     }
 }

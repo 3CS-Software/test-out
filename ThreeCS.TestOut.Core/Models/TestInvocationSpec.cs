@@ -41,6 +41,8 @@ namespace ThreeCS.TestOut.Core.Models
         /// </summary>
         public int TestInactivityTimeoutSeconds { get; set; }
 
+        public bool UseFileCompression { get; set; }
+
         public DateTime RequestedAt { get; set; }
     }
 }

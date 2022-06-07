@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using ICSharpCode.SharpZipLib.Tar;
+using Microsoft.Extensions.Logging;
 using Nito.AsyncEx;
 using System;
 using System.Collections.Generic;
@@ -62,42 +63,70 @@ namespace ThreeCS.TestOut.Core.Communication
             var pipeServerStream = new AnonymousPipeServerStream();
             var pipeClientStream = new AnonymousPipeClientStream(PipeDirection.In, pipeServerStream.GetClientHandleAsString());
 
-            //Zip into the pipe.
-            using var memStream = new MemoryStream(64 * 1024);
-            using var zipArchive = new ZipArchive(pipeServerStream, ZipArchiveMode.Create);
-
             //Upload out of the pipe.
             using HttpClient hc = GetClient();
             var request = new HttpRequestMessage(HttpMethod.Post, "Stream/" + message.StreamId);
             using var reqContent = new StreamContent(pipeClientStream);
             request.Content = reqContent;
 
-            //Begin the request async.
-            _logger.LogDebug("Starting Upload Request");
-            var responseTask = hc.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-
-            //Now we have a zip archive stream wired up to the upload stream post.  We'll pump all the 
-            //directory contents into it, and close it.
-            _logger.LogDebug("Zipping Files For Upload");
-            string basePath = Path.GetFullPath(message.RequestedPath);
-            var allFiles = Directory.GetFiles(basePath, "*", SearchOption.AllDirectories);
-
-            int sentCount = 1;
-            int totalCount = allFiles.Count();
-            foreach (var file in Directory.GetFiles(basePath, "*", SearchOption.AllDirectories))
+            Task<HttpResponseMessage> responseTask;
+            if (message.UseCompression)
             {
-                _logger.LogDebug("Sending file {@curItem} ({@curCount} of {@total})", file, sentCount++, totalCount);
-                var zipEntryPath = file.Replace(basePath + Path.DirectorySeparatorChar, "");
-                var zipEntry = zipArchive.CreateEntry(zipEntryPath);
-                using var fileStream = File.OpenRead(file);
-                using var zipEntryStream = zipEntry.Open();
+                //Zip into the pipe.
+                using var zipArchive = new ZipArchive(pipeServerStream, ZipArchiveMode.Create);
 
-                await fileStream.CopyToAsync(zipEntryStream);
-                //await pipeServerStream.Flush();
+                //Begin the request async.
+                _logger.LogDebug("Starting Upload Request");
+                responseTask = hc.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+
+                //Now we have a zip archive stream wired up to the upload stream post.  We'll pump all the 
+                //directory contents into it, and close it.
+                _logger.LogDebug("Zipping Files For Upload");
+                string basePath = Path.GetFullPath(message.RequestedPath);
+                var allFiles = Directory.GetFiles(basePath, "*", SearchOption.AllDirectories);
+
+                int sentCount = 1;
+                int totalCount = allFiles.Count();
+                foreach (var file in Directory.GetFiles(basePath, "*", SearchOption.AllDirectories))
+                {
+                    _logger.LogDebug("Sending file {@curItem} ({@curCount} of {@total})", file, sentCount++, totalCount);
+                    var zipEntryPath = file.Replace(basePath + Path.DirectorySeparatorChar, "");
+                    var zipEntry = zipArchive.CreateEntry(zipEntryPath);
+                    using var fileStream = File.OpenRead(file);
+                    using var zipEntryStream = zipEntry.Open();
+
+                    await fileStream.CopyToAsync(zipEntryStream);
+                    //await pipeServerStream.Flush();
+                }
             }
+            else
+            {
+                using var tarArchive = TarArchive.CreateOutputTarArchive(pipeServerStream, Encoding.UTF8);
 
-            //Explicitly close the zip archive, so the underlying streams are closed (I hope..)
-            zipArchive.Dispose();
+                //Begin the request async.
+                _logger.LogDebug("Starting Upload Request");
+                responseTask = hc.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+
+                //Now we have a zip archive stream wired up to the upload stream post.  We'll pump all the 
+                //directory contents into it, and close it.
+                _logger.LogDebug("Sending Files For Upload");
+                string basePath = Path.GetFullPath(message.RequestedPath);
+                var allFiles = Directory.GetFiles(basePath, "*", SearchOption.AllDirectories);
+
+                int sentCount = 1;
+                int totalCount = allFiles.Count();
+                foreach (var file in Directory.GetFiles(basePath, "*", SearchOption.AllDirectories))
+                {
+                    _logger.LogDebug("Sending file {@curItem} ({@curCount} of {@total})", file, sentCount++, totalCount);
+                    var entry = TarEntry.CreateEntryFromFile(file);
+                    var entryPath = file
+                        .Replace(basePath + Path.DirectorySeparatorChar, "") //Just get the relative path..
+                        .Replace(Path.DirectorySeparatorChar, '/'); //and make sure it uses / as path seperator, as per Tar standard.
+                    entry.TarHeader.Name = entryPath;
+                    tarArchive.WriteEntry(entry, false);
+                    //await pipeServerStream.FlushAsync();
+                }
+            }
 
             _logger.LogDebug("Completed File Upload Request");
             var response = await responseTask;
@@ -124,22 +153,41 @@ namespace ThreeCS.TestOut.Core.Communication
             using HttpClient hc = GetClient();
             var request = new HttpRequestMessage(HttpMethod.Get, "Stream/" + message.StreamId);
             var response = await hc.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
-            _logger.LogDebug("Reading from file stream");
+            //response.EnsureSuccessStatusCode();
+            _logger.LogDebug("Reading from web stream");
             var responseStream = await response.Content.ReadAsStreamAsync();
-            _logger.LogDebug("Creating Zip Archive from file stream");
-            var zipArchive = new ZipArchive(responseStream, ZipArchiveMode.Read);
-            _logger.LogDebug("Extracting Zip stream into folder {@folder}", streamDownloadRegistration.DestLocalFolder);
 
-
-            var progress = new Progress<ZipProgress>();
-            progress.ProgressChanged += (o, e) =>
+            if (message.UseCompression)
             {
-                _logger.LogDebug("Receiving file {@curItem} ({@curCount} of {@total})", e.CurrentItem, e.Processed, e.Total);
-            };
+                _logger.LogDebug("Creating Zip Archive from stream");
+                using var zipArchive = new ZipArchive(responseStream, ZipArchiveMode.Read);
+                _logger.LogDebug("Extracting Zip stream into folder {@folder}", streamDownloadRegistration.DestLocalFolder);
 
-            zipArchive.ExtractToDirectory(streamDownloadRegistration.DestLocalFolder, progress);
-            _logger.LogDebug($"Zip extraction complete.");
+
+                var progress = new Progress<ZipProgress>();
+                progress.ProgressChanged += (o, e) =>
+                {
+                    _logger.LogDebug("Receiving file {@curItem} ({@curCount} of {@total})", e.CurrentItem, e.Processed, e.Total);
+                };
+
+                zipArchive.ExtractToDirectory(streamDownloadRegistration.DestLocalFolder, progress);
+                _logger.LogDebug($"Zip extraction complete.");
+            }
+            else
+            {
+                _logger.LogDebug("Reading Tar Archive from stream");
+                using var tarArchive = TarArchive.CreateInputTarArchive(responseStream, Encoding.UTF8);
+                int curCount = 1;
+                tarArchive.ProgressMessageEvent += (TarArchive archive, TarEntry entry, string message) =>
+                {
+                    _logger.LogDebug("Receiving file {@curItem} ({@curCount} received)", entry.Name, curCount++);
+                };
+
+                _logger.LogDebug("Extracting tar archive into folder {@folder}", streamDownloadRegistration.DestLocalFolder);
+
+                tarArchive.ExtractContents(streamDownloadRegistration.DestLocalFolder);
+                _logger.LogDebug($"tar extraction complete.");
+            }
 
             //Finally, signal to the waiting items that we're done.
             streamDownloadRegistration.CompleteEvent.Set();
@@ -175,7 +223,8 @@ namespace ThreeCS.TestOut.Core.Communication
                 SenderId = sourcePath.HostId,
                 ReceiverId = _hostInfo.HostId,
                 StreamId = streamId,
-                SourcePath = sourcePath.SourcePath
+                SourcePath = sourcePath.SourcePath,
+                UseCompression = false
             });
 
             //Wait for the contents to be copied locally.
