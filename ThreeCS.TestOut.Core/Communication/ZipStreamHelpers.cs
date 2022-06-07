@@ -73,8 +73,4 @@ namespace ThreeCS.TestOut.Core.Communication
             }
         }
     }
-
-    internal class ZipStreamHelpers
-    {
-    }
 }

@@ -9,5 +9,6 @@ namespace ThreeCS.TestOut.Core.Communication.Messages
     public class StartFileTransferReadMessage
     {
         public Guid StreamId { get; set; }
+        public bool UseCompression { get; set; }
     }
 }

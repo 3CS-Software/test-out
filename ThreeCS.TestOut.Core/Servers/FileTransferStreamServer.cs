@@ -57,13 +57,15 @@ namespace ThreeCS.TestOut.Core.Communication
             await _messageBus.SendMessage(message.SenderId, new StartFileTransferWriteMessage
             {
                 StreamId = message.StreamId,
-                RequestedPath = message.SourcePath
+                RequestedPath = message.SourcePath,
+                UseCompression = message.UseCompression,
             });
 
             //Let the receiver know they should read from the file.
             await _messageBus.SendMessage(message.ReceiverId, new StartFileTransferReadMessage
             {
-                StreamId = message.StreamId
+                StreamId = message.StreamId,
+                UseCompression = message.UseCompression
             });
 
             //Wait for the upload and download queues to be ready.
