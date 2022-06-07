@@ -32,6 +32,7 @@ namespace ThreeCS.TestOut.Server
         /// <param name="testAssembly">Only used for Runner.  The assembly to search for tests.</param>
         /// <param name="resultFilename">Only used for Runner.  The filename to aggregate the test results into.</param>
         /// <param name="maxRetryCount">Only used for Runner.  The maximum number of times to re-run a failed test.</param>
+        /// <param name="compressFileTransfers">Specifies that any transfers into this console should be compressed.  Defaults to false.</param>
         /// <param name="testInactivityTimeout">Only used for Runner.  The maximum amount of seconds that a test can process without giving any 
         /// feedback before being considered dead.</param>
         /// <param name="batchSize">Only used for Server.  The number of tests per thread to include in a batch.  For the default 
@@ -53,6 +54,7 @@ namespace ThreeCS.TestOut.Server
             string resultFilename = "test_results.trx",
             int batchSize = 10,
             int maxRetryCount = 2,
+            bool compressFileTransfers = false,
             int testInactivityTimeout = 1200,
             bool verbose = false,
             string logFolder = "",
@@ -83,7 +85,6 @@ namespace ThreeCS.TestOut.Server
 
             try
             {
-
                 List<Task> hostTasks = new List<Task>();
 
                 //Run the server URI through the uri builder, which will add the trailing slash if it's missing, and will also cause an error if it's invalid.
@@ -97,7 +98,7 @@ namespace ThreeCS.TestOut.Server
 
                 //Some global configs.
                 var serverConnectionConfig = new ServerConnectionConfig { ServerUrl = serverUrl, FileServerUrl = fileTransferServerUrl.ToString() };
-                var workspaceConfig = new WorkspaceConfig { WorkingFolder = Path.Combine(dataFolder, "Data") };
+                var workspaceConfig = new WorkspaceConfig { WorkingFolder = Path.Combine(dataFolder, "Data") , TransferUsingCompression = compressFileTransfers };
                 var storageConfig = new StorageConfig { StateFolder = Path.Combine(dataFolder, "State") };
 
                 void AddCommonConfigs(IServiceCollection svc)
@@ -109,8 +110,6 @@ namespace ThreeCS.TestOut.Server
 
                 if (mode.HasFlag(ExecutionMode.Server))
                 {
-
-
                     //All the server init stuff is handled in the web host.
                     //TODO: look at using MinimalAPIs for this stuff, rather than a full mvc host.
                     //https://gist.github.com/davidfowl/ff1addd02d239d2d26f4648a06158727

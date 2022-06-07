@@ -224,7 +224,7 @@ namespace ThreeCS.TestOut.Core.Communication
                 ReceiverId = _hostInfo.HostId,
                 StreamId = streamId,
                 SourcePath = sourcePath.SourcePath,
-                UseCompression = false
+                UseCompression = _fileConfig.TransferUsingCompression
             });
 
             //Wait for the contents to be copied locally.
