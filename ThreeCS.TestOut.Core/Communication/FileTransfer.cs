@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using ThreeCS.TestOut.Core.Communication.Messages;
 using ThreeCS.TestOut.Core.Hosting;
@@ -202,6 +203,10 @@ namespace ThreeCS.TestOut.Core.Communication
         {
             //TODO: single http client?  how much does this cost to spin up?...
             var hc = new HttpClient();
+
+            //Don't put any hard limit on how long files take to transfer.
+            hc.Timeout = Timeout.InfiniteTimeSpan;
+
             hc.BaseAddress = new Uri(_serverConfig.FileServerUrl);
             return hc;
         }
