@@ -1,0 +1,37 @@
+services:
+  server:
+    build: 
+      context: git://github.com/Lexy2/test-out
+    ports:
+      - 34872:34872
+      - 34873:34873
+    networks:
+      - net
+    hostname: ${SERVER}
+    command: 
+      - --mode
+      - Server
+      - --server-url
+      - http://${SERVER}:34872/
+      - --verbose
+
+  agent:
+    deploy:
+      replicas: 3
+    build:
+      context: git://github.com/Lexy2/test-out
+    networks:
+      - net
+    depends_on:
+      - server
+    command: 
+      - --mode
+      - Agent
+      - --server-url
+      - http://${SERVER}:34872/
+      - --compress-file-transfers
+      - --verbose
+
+networks:
+  net:
+    driver: nat
