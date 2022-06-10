@@ -22,7 +22,7 @@ To setup a Test-Out server, run
 To setup a Test-Out agent, run
 `sc.exe create "TestoutAgent" binpath="C:\Tools\dotnet\testout.exe --as-service --mode Agent --server-url https://the-server-hostname:34872"`
 
-Be sure to check what users the service is running as, what the startup for the service is, and check firewalls after installation.
+Be sure to check what users the service is running as, what the startup for the service is, and check firewalls after installation.  The server will need to have both the server port AND the next consecutive port opened, eg, in the config above, both port 34872 AND 34873 are required to be open.
 
 When run with the `--as-service` flag, Test-Out will put all it's data in the global program data folder, usually C:\ProgramData\TestOut.  This flag can be used with the service stopped, along with the `--verbose` option to help diagnose issues.
 
