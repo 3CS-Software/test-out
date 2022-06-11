@@ -36,6 +36,7 @@ Test-Out can be run in any mode (Run, Agent, Server) interactively.  Data that i
 # Running Tests
 Once the tool is installed, tests can be run with:
 `testout --mode Run --base-path ".\MyProject.Tests\bin\Debug" --test-assembly "MyProject.Tests.dll"`
+The `--base-path` instructs the testout runner to package up everything under that folder and make it available for tests on each of the agents.  Absolute paths are supported for the `--base-path` argument.  The `--test-assembly` path is relative to the base path, and defines where the test assembly to invoke can be found.  If you use an absolute path for `--test-assembly` it must resolve to a file underneath the `--base-path` folder.
 
 For single machine testing scenarios, the mode can be both Run/Agent and Server, eg:
 `testout --mode Run,Agent,Server --base-path ".\MyProject.Tests\bin\Debug" --test-assembly "MyProject.Tests.dll"`
