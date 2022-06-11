@@ -55,7 +55,7 @@ namespace ThreeCS.TestOut.Core.Execution
             }
             else
             {
-                testAssemblyFullPath = Path.Combine(effectiveBasePath, _config.TestAssemblyPath);
+                testAssemblyFullPath = Path.GetFullPath(Path.Combine(effectiveBasePath, _config.TestAssemblyPath));
             }
 
             if (!testAssemblyFullPath.ToUpper().StartsWith(effectiveBasePath.ToUpper()))
