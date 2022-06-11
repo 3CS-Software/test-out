@@ -21,7 +21,7 @@ namespace ThreeCS.TestOut.Core.Execution
     {
         readonly InvokerConfig _config;
         readonly IMessageBusClient _messageBus;
-        readonly InvocationResourcePackager _resourcePackager;
+        readonly InvocationPathValidator _pathValidator;
         readonly IResultSerializer _resultSerializer;
         readonly ILogger<Invoker> _logger;
         readonly HostInfo _hostInfo;
@@ -37,7 +37,7 @@ namespace ThreeCS.TestOut.Core.Execution
         public Invoker(
             InvokerConfig config,
             IMessageBusClient messageBus,
-            InvocationResourcePackager resourcePackager,
+            InvocationPathValidator pathValidator,
             IResultSerializer resultSerializer,
             ILogger<Invoker> logger,
             HostInfo hostInfo,
@@ -47,7 +47,7 @@ namespace ThreeCS.TestOut.Core.Execution
         {
             _config = config;
             _messageBus = messageBus;
-            _resourcePackager = resourcePackager;
+            _pathValidator = pathValidator;
             _resultSerializer = resultSerializer;
             _logger = logger;
             _hostInfo = hostInfo;
@@ -84,8 +84,16 @@ namespace ThreeCS.TestOut.Core.Execution
 
             await _messageBus.Register(_invokerInfo.Id);
 
-            //Prepare a folder to transmit to the server.
-            var testBasePath = await _resourcePackager.Prepare(_invokerInfo.Id);
+            //Get the valid test paths from the config.
+            var testPaths = _pathValidator.GetValidPaths();
+            
+            //TODO: should we copy the test base path to a temp folder locally?  This might be useful
+            //for cases where it's pointing to a working folder, but not yet needed.
+            var invokerPathInfo =  new RemotePathInfo
+            {
+                HostId = _invokerInfo.Id,
+                SourcePath = testPaths.BasePath
+            };
 
             //Broadcast to the server with the details required to start the test.
             var invocationId = "Invocation_" + Guid.NewGuid().ToString();
@@ -93,8 +101,8 @@ namespace ThreeCS.TestOut.Core.Execution
             {
                 InvocationId = invocationId,
                 InvokerInfo = _invokerInfo,
-                SourcePath = testBasePath,
-                TestAssemblyPath = _config.TestAssemblyPath,
+                SourcePath = invokerPathInfo,
+                TestAssemblyPath = testPaths.TestAssemblyPath,
                 MaxRetryCount = _config.MaxRetryCount,
                 TestInactivityTimeoutSeconds = _config.TestInactivityTimeoutSeconds
             });

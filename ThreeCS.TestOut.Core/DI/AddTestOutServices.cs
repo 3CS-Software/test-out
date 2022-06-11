@@ -69,7 +69,7 @@ namespace ThreeCS.TestOut
             //Runner.
             services.AddScoped<Invoker>();
             services.AddScoped<InvokerConfig>();
-            services.AddScoped<InvocationResourcePackager>();
+            services.AddScoped<InvocationPathValidator>();
 
             return services;
         }

@@ -28,7 +28,7 @@ namespace ThreeCS.TestOut.Server
         /// <param name="serverUrl">The server URL that this will either host at for server mode, or connect to for agent or runner.  
         /// This should be of the form https://SomeHost. </param>
         /// <param name="basePath">Only used for Runner.  The base path for the tests to run in.  Everything in this path will be 
-        /// distributed to all agents.</param>
+        /// distributed to all agents.  If this isn't given, the folder that the --test-assembly parameter points to wil be used.</param>
         /// <param name="testAssembly">Only used for Runner.  The assembly to search for tests.</param>
         /// <param name="resultFilename">Only used for Runner.  The filename to aggregate the test results into.</param>
         /// <param name="maxRetryCount">Only used for Runner.  The maximum number of times to re-run a failed test.</param>
@@ -49,7 +49,7 @@ namespace ThreeCS.TestOut.Server
         static async Task<int> Main(
             ExecutionMode mode,
             string serverUrl = "http://localhost:34872/",
-            string basePath = ".",
+            string basePath = null,
             string testAssembly = "",
             string resultFilename = "test_results.trx",
             int batchSize = 10,
@@ -183,8 +183,8 @@ namespace ThreeCS.TestOut.Server
                     //Start the invocation.
                     await host.StartService<Invoker>(async r =>
                     {
-                    //Perform the test run.
-                    await r.RunTests();
+                        //Perform the test run.
+                        await r.RunTests();
                         await host.StopAsync();
                     }, serverUrl);
 
