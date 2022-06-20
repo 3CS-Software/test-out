@@ -1,7 +1,9 @@
 services:
   server:
+    container_name: ${SERVER}
     build: 
-      context: git://github.com/Lexy2/test-out
+      context: ${GIT_URL}
+    image: threecs/test-out:latest
     ports:
       - 34872:34872
       - 34873:34873
@@ -19,7 +21,8 @@ services:
     deploy:
       replicas: 3
     build:
-      context: git://github.com/Lexy2/test-out
+      context: ${GIT_URL}
+    image: threecs/test-out:latest
     networks:
       - net
     depends_on:
@@ -34,4 +37,5 @@ services:
 
 networks:
   net:
+    name: testout-net
     driver: nat
