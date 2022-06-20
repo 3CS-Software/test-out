@@ -20,9 +20,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThreeCS.TestOut.Trx", "Thre
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThreeCS.TestOut.Core.Tests", "ThreeCS.TestOut.Core.Tests\ThreeCS.TestOut.Core.Tests.csproj", "{B40FED61-3294-468B-9278-19214CDAD706}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThreeCS.TestOut.CommandInvoker", "ThreeCS.TestOut.CommandInvoker\ThreeCS.TestOut.CommandInvoker.csproj", "{AEE5B8C7-C7DC-4186-A70F-8AE7775BEDB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThreeCS.TestOut.CommandInvoker", "ThreeCS.TestOut.CommandInvoker\ThreeCS.TestOut.CommandInvoker.csproj", "{AEE5B8C7-C7DC-4186-A70F-8AE7775BEDB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThreeCS.TestOut.Console.Tests", "ThreeCS.TestOut.Console.Tests\ThreeCS.TestOut.Console.Tests.csproj", "{CE0B6E39-2485-425D-92FB-3EDAC7FF5F99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThreeCS.TestOut.Console.Tests", "ThreeCS.TestOut.Console.Tests\ThreeCS.TestOut.Console.Tests.csproj", "{CE0B6E39-2485-425D-92FB-3EDAC7FF5F99}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,11 +45,9 @@ Global
 		{69719567-9366-4C8B-824D-1116EBA181F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{69719567-9366-4C8B-824D-1116EBA181F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69719567-9366-4C8B-824D-1116EBA181F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{69719567-9366-4C8B-824D-1116EBA181F9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B12FD0A7-6C6A-400F-B58E-3C31EFF25E7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B12FD0A7-6C6A-400F-B58E-3C31EFF25E7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B12FD0A7-6C6A-400F-B58E-3C31EFF25E7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B12FD0A7-6C6A-400F-B58E-3C31EFF25E7F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{00E4E2E1-1492-4318-9D98-3DD260F6860E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{00E4E2E1-1492-4318-9D98-3DD260F6860E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00E4E2E1-1492-4318-9D98-3DD260F6860E}.Release|Any CPU.ActiveCfg = Release|Any CPU
