@@ -364,3 +364,5 @@ FodyWeavers.xsd
 
 
 **/launchSettings.json
+.vscode/launch.json
+.vscode/tasks.json

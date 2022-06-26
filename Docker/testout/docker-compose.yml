@@ -1,0 +1,41 @@
+services:
+  server:
+    container_name: ${SERVER}
+    build: 
+      context: ${GIT_URL}
+    image: threecs/test-out:latest
+    ports:
+      - 34872:34872
+      - 34873:34873
+    networks:
+      - net
+    hostname: ${SERVER}
+    command: 
+      - --mode
+      - Server
+      - --server-url
+      - http://${SERVER}:34872/
+      - --verbose
+
+  agent:
+    deploy:
+      replicas: 3
+    build:
+      context: ${GIT_URL}
+    image: threecs/test-out:latest
+    networks:
+      - net
+    depends_on:
+      - server
+    command: 
+      - --mode
+      - Agent
+      - --server-url
+      - http://${SERVER}:34872/
+      - --compress-file-transfers
+      - --verbose
+
+networks:
+  net:
+    name: testout-net
+    driver: nat
