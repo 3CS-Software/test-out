@@ -44,6 +44,8 @@ namespace ThreeCS.TestOut.Server
         /// <param name="logFolder">The folder to output logs.  Logs will be in the folder format testout-yyyyMMdd.log.  
         /// Setting this to 'NONE' will disable logging.  Leaving this empty will log under the system appdata folder.</param>
         /// <param name="maxWorkers">Only used for the Agent.  The maximum number of test workers.  Defaults to the machine core count if null.</param>
+        /// <param name="workingFolder">The path to use for storing testout working data.  If this is not set, this defaults to Environment.SpecialFolder.CommonApplicationData\TestOut when
+        /// run interactively, or Environment.SpecialFolder.LocalApplicationData\TestOut when run as a service.</param>
         /// <param name="asService">Used when installed using sc.exe on windows.  Modifies hosting slightly to work as a windows service.</param>
         /// <returns></returns>
         static async Task<int> Main(
@@ -59,6 +61,7 @@ namespace ThreeCS.TestOut.Server
             bool verbose = false,
             string logFolder = "",
             int? maxWorkers = null,
+            string workingFolder = null,
             bool asService = false
             )
         {
@@ -71,9 +74,12 @@ namespace ThreeCS.TestOut.Server
             //TODO: can dragonfruit propogate args?...
             string[] args = new string[0];
 
-            var dataFolder = asService
-                ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TestOut")
-                : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TestOut");
+            //Base the dataFolder from the working folder first, then from any args.
+            var dataFolder = workingFolder ?? (
+                asService
+                    ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "TestOut")
+                    : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TestOut")
+            );
 
             Directory.CreateDirectory(dataFolder);
 
