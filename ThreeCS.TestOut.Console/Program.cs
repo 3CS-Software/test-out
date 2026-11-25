@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using ThreeCS.TestOut.Console;
@@ -23,7 +24,7 @@ namespace ThreeCS.TestOut.Server
         /// <summary>
         /// TestOut: It's like a campout for your tests!
         /// </summary>
-        /// <param name="mode">The mode to run in.  This is required.  For console running, this can be a comma seperated list of modes.  If running as a service, 
+        /// <param name="mode">The mode to run in.  This is required.  For console running, this can be a comma seperated list of modes.  If run with both 'Run' and 'Agent/Server', the Agent/Server will be terminated once the Run is complete.  If running as a service, 
         /// this must be either 'Agent' or 'Server'</param>
         /// <param name="serverUrl">The server URL that this will either host at for server mode, or connect to for agent or runner.  
         /// This should be of the form https://SomeHost. </param>
@@ -91,7 +92,7 @@ namespace ThreeCS.TestOut.Server
 
             try
             {
-                List<Task> hostTasks = new List<Task>();
+                List<IHost> hosts = new ();
 
                 //Run the server URI through the uri builder, which will add the trailing slash if it's missing, and will also cause an error if it's invalid.
                 var serverUrlBuilder = new UriBuilder(serverUrl);
@@ -146,7 +147,7 @@ namespace ThreeCS.TestOut.Server
                     });
                     var host = builder.Build();
 
-                    hostTasks.Add(host.RunAsync());
+                    hosts.Add(host);
                 }
 
                 if (mode.HasFlag(ExecutionMode.Agent))
@@ -164,10 +165,10 @@ namespace ThreeCS.TestOut.Server
                     var agentConfig = host.Services.GetService<AgentConfig>();
                     agentConfig.MaxWorkers = maxWorkers;
 
-                    //await host.StartService<Agent>(a => a.StartAgent(), serverUrl);
-                    hostTasks.Add(host.RunAsync());
+                    hosts.Add(host);
                 }
 
+                IHost? runHost = null;
                 if (mode.HasFlag(ExecutionMode.Run))
                 {
 
@@ -177,9 +178,9 @@ namespace ThreeCS.TestOut.Server
                             AddCommonConfigs(svc);
                             svc.AddSingleton(new HostInfo { HostId = "Invoker_" + Guid.NewGuid() });
                         });
-                    var host = builder.Build();
+                    runHost = builder.Build();
 
-                    var config = host.Services.GetService<InvokerConfig>();
+                    var config = runHost.Services.GetService<InvokerConfig>();
                     config.BasePath = basePath;
                     config.TestAssemblyPath = testAssembly;
                     config.ResultFilename = resultFilename;
@@ -187,18 +188,35 @@ namespace ThreeCS.TestOut.Server
                     config.TestInactivityTimeoutSeconds = testInactivityTimeout;
 
                     //Start the invocation.
-                    await host.StartService<Invoker>(async r =>
+                    await runHost.StartService<Invoker>(async r =>
                     {
                         //Perform the test run.
                         await r.RunTests();
-                        await host.StopAsync();
+                        await runHost.StopAsync();
                     }, serverUrl);
-
-
-                    hostTasks.Add(host.WaitForShutdownAsync());
                 }
 
+                //Start the hosts.
+                var hostTasks = hosts.Select(n => n.RunAsync())
+                    .ToList();
+
+                //If we're doing a run, execute, then stop the hosts.
+                if (runHost != null)
+                {
+                    //Run the tasks.
+                    await runHost.RunAsync();
+
+                    if (hostTasks.Any())
+                    {
+                        //Send a 'stop' to each of the hosts and wait for the stop to be acknowledged.
+                        var stopTasks = hosts.Select(n => n.StopAsync()).ToList();
+                        await Task.WhenAll(stopTasks);
+                    }
+                }
+                
+                //Wait for the hosts to finish.
                 await Task.WhenAll(hostTasks);
+
                 globalLog.Information("Testout Closed", version);
 
                 return 1;

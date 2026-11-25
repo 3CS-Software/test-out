@@ -1,5 +1,7 @@
 using NUnit.Framework;
+using System;
 using System.Threading;
+using System.Threading.Tasks;
 using ThreeCS.TestOut.Core.Utilities;
 
 namespace ThreeCS.TestOut.Core.Tests.Integration
@@ -39,6 +41,21 @@ namespace ThreeCS.TestOut.Core.Tests.Integration
             // invoke tests.            
 
 
+        }
+
+        [Test]
+        public async Task AgentLifespanTests()
+        {
+            var invoker = new CommandInvoker();
+
+            var cancelTokenSrc = new CancellationTokenSource();
+
+            var serverResult = invoker.InvokeCommand
+                ("ThreeCS.TestOut.Console.exe",
+                new string[] { "--mode Run,Server,Agent --test-assembly \"Sample.FrameworkTests.dll\" --verbose --batch-size 5 --max-workers 5" },
+                cancelTokenSrc.Token);
+
+            await serverResult;
         }
     }
 }
