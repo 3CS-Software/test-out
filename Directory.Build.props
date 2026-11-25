@@ -4,4 +4,9 @@
 		<Company>3CS Software</Company>
 		<Product>TestOut</Product>
 	</PropertyGroup>
+
+	<!-- this condition is here so it doesn't mess with Sample.FrameworkTests which is an old net 4.7 proejct. -->
+	<PropertyGroup Condition="'$(UsingMicrosoftNETSdk)' == 'true'">
+		<TargetFramework>net10.0</TargetFramework>
+	</PropertyGroup>
 </Project>

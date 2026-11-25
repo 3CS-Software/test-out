@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31919.166
+# Visual Studio Version 18
+VisualStudioVersion = 18.10.12217.157 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThreeCS.TestOut.Core", "ThreeCS.TestOut.Core\ThreeCS.TestOut.Core.csproj", "{E7DDD6AD-66A4-44CD-8E33-EBE14C0DD03B}"
 EndProject
@@ -23,6 +23,17 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThreeCS.TestOut.CommandInvoker", "ThreeCS.TestOut.CommandInvoker\ThreeCS.TestOut.CommandInvoker.csproj", "{AEE5B8C7-C7DC-4186-A70F-8AE7775BEDB8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThreeCS.TestOut.Console.Tests", "ThreeCS.TestOut.Console.Tests\ThreeCS.TestOut.Console.Tests.csproj", "{CE0B6E39-2485-425D-92FB-3EDAC7FF5F99}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_SolutionItems", "{5D9911D8-0829-4F7F-990A-CF536157B358}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+		Dockerfile = Dockerfile
+		global.json = global.json
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,8 +1,11 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS pkg-restore
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS pkg-restore
 
 WORKDIR /build
 
 COPY ThreeCS.TestOut.sln \
+     global.json \
+     Directory.Build.props \
+     Directory.Packages.props \
      **/*.csproj \
      ./
 # Docker wildcard copies all files into a flat structure. This will put csproj files in their supposed locations
@@ -17,7 +20,7 @@ FROM pkg-restore AS build
 WORKDIR /build
 COPY . .
 
-RUN dotnet publish --no-restore --configuration release --self-contained=true --framework=net6.0 --runtime=win-x64 -p:PublishTrimmed=true -o /testout
+RUN dotnet publish --no-restore --configuration release --self-contained=true --framework=net10.0 --runtime=win-x64 -p:PublishTrimmed=true -o /testout
 
 # Modify this base image to your build requirements.
 FROM mcr.microsoft.com/windows/nanoserver:1809
