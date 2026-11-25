@@ -186,14 +186,6 @@ namespace ThreeCS.TestOut.Server
                     config.ResultFilename = resultFilename;
                     config.MaxRetryCount = maxRetryCount;
                     config.TestInactivityTimeoutSeconds = testInactivityTimeout;
-
-                    //Start the invocation.
-                    await runHost.StartService<Invoker>(async r =>
-                    {
-                        //Perform the test run.
-                        await r.RunTests();
-                        await runHost.StopAsync();
-                    }, serverUrl);
                 }
 
                 //Start the hosts.
@@ -203,6 +195,14 @@ namespace ThreeCS.TestOut.Server
                 //If we're doing a run, execute, then stop the hosts.
                 if (runHost != null)
                 {
+                    //Start the invocation.
+                    await runHost.StartService<Invoker>(async r =>
+                    {
+                        //Perform the test run.
+                        await r.RunTests();
+                        await runHost.StopAsync();
+                    }, serverUrl);
+
                     //Run the tasks.
                     await runHost.WaitForShutdownAsync();
 

@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ThreeCS.TestOut.CommandInvoker\ThreeCS.TestOut.CommandInvoker.csproj" />
     <ProjectReference Include="..\ThreeCS.TestOut.Console\ThreeCS.TestOut.Console.csproj" />
+    <ProjectReference Include="..\ThreeCS.TestOut.Core\ThreeCS.TestOut.Core.csproj" />
   </ItemGroup>
 
 </Project>

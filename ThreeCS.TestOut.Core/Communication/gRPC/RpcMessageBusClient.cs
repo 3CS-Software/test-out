@@ -303,7 +303,17 @@ namespace ThreeCS.TestOut.Core.Communication.gPRC
         {
             _disposing = true;
             _stream.Dispose();
-            await _channel.ShutdownAsync();
+            if (_channel.State != ChannelState.Shutdown)
+            {
+                try
+                {
+                    await _channel.ShutdownAsync();
+                }
+                finally 
+                { 
+                    //We're disposing this, so not going to report any errors that happen during shutdown.
+                }
+            }
         }
     }
 }

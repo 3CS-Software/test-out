@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using ThreeCS.TestOut.Core.Utilities;
@@ -43,6 +44,11 @@ namespace ThreeCS.TestOut.Core.Tests.Integration
 
         }
 
+        string ConsoleExePath => Path.GetFullPath("ThreeCS.TestOut.Console.exe");
+        string SampleTestsDllPath => Path.GetFullPath("..\\..\\..\\..\\Sample.FrameworkTests\\bin\\debug\\");
+        string SampleTestsDllFile => "Sample.FrameworkTests.dll";
+
+
         [Test]
         public async Task AgentLifespanTests()
         {
@@ -50,12 +56,14 @@ namespace ThreeCS.TestOut.Core.Tests.Integration
 
             var cancelTokenSrc = new CancellationTokenSource();
 
-            var serverResult = invoker.InvokeCommand
-                ("ThreeCS.TestOut.Console.exe",
-                new string[] { "--mode Run,Server,Agent --test-assembly \"Sample.FrameworkTests.dll\" --verbose --batch-size 5 --max-workers 5" },
+            var args = new string[] { "--mode", "Run,Server,Agent", $"--base-path", SampleTestsDllPath, $"--test-assembly", SampleTestsDllFile, "--verbose", "--batch-size", "5", "--max-workers", "5" };
+            var serverResult = invoker.InvokeCommand(
+                ConsoleExePath,
+                args,
                 cancelTokenSrc.Token);
 
-            await serverResult;
+            var result = await serverResult;
+            //TODO: validate results, also, tests may be freezing due to locks in stdout/err.
         }
     }
 }
