@@ -39,7 +39,7 @@ jobs:
       run: dotnet build --no-restore Core.slnf -p:Version=${{ steps.version.outputs.version_str }}
 
     - name: Pack
-      run: dotnet pack 'ThreeCS.TestOut.Console/ThreeCS.TestOut.Console.csproj' --include-symbols --include-source --no-build -p:Version=${{ steps.version.outputs.version_str }} -p:SymbolPackageFormat=snupkg -o dist
+      run: dotnet pack 'ThreeCS.TestOut.Console/ThreeCS.TestOut.Console.csproj' --include-symbols --include-source -p:Version=${{ steps.version.outputs.version_str }} -p:SymbolPackageFormat=snupkg -o dist
 
     - name: Push to Nuget
       run: dotnet nuget push dist/ThreeCS.TestOut.Console.${{ steps.version.outputs.version_str }}.nupkg --api-key ${{ secrets.NUGET_ORG_PUB_PROJ_KEY }} --source https://api.nuget.org/v3/index.json
