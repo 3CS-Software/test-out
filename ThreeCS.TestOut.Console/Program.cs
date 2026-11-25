@@ -204,9 +204,9 @@ namespace ThreeCS.TestOut.Server
                 if (runHost != null)
                 {
                     //Run the tasks.
-                    await runHost.RunAsync();
+                    await runHost.WaitForShutdownAsync();
 
-                    if (hostTasks.Any())
+                    if (hosts.Any())
                     {
                         //Send a 'stop' to each of the hosts and wait for the stop to be acknowledged.
                         var stopTasks = hosts.Select(n => n.StopAsync()).ToList();
